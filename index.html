@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عالم الفيزياء والكيمياء</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --accent: #ec4899;
+            --text: #f8fafc;
+            --subtext: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 20px 0;
+        }
+
+        /* الشاشة الترحيبية (Splash Screen) */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease, visibility 1s;
+        }
+
+        #splash-screen h1 {
+            font-size: 2rem;
+            color: #ffffff;
+            text-align: center;
+            padding: 0 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.03); }
+        }
+
+        /* الحاوية الرئيسية للواجهات */
+        .container {
+            width: 90%;
+            max-width: 500px;
+            background-color: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            min-height: 350px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin: auto;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            color: var(--text);
+            font-size: 1.5rem;
+        }
+
+        /* تنسيق الأزرار */
+        .btn-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn-accent {
+            background-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-accent:hover {
+            background-color: #db2777;
+        }
+
+        /* زر العودة */
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: transparent;
+            border: 1px solid var(--subtext);
+            color: var(--subtext);
+            padding: 5px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            color: var(--text);
+            border-color: var(--text);
+        }
+
+        /* التحكم بظهور الشاشات */
+        .screen {
+            display: none;
+            width: 100%;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* نصوص توضيحية داخلية */
+        .info-box {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            color: var(--subtext);
+            margin-top: 15px;
+        }
+
+        /* الفوتر (تذييل الصفحة) */
+        footer {
+            margin-top: 20px;
+            color: var(--subtext);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- الشاشة الترحيبية -->
+    <div id="splash-screen">
+        <h1>أهلاً بكم في عالم الفيزياء والكيمياء ❤️</h1>
+    </div>
+
+    <!-- الحاوية الرئيسية -->
+    <div class="container">
+        
+        <!-- زر العودة -->
+        <button id="back-btn" class="back-btn" onclick="goBack()" style="display: none;">← رجوع</button>
+
+        <!-- الشاشة 1: زر ابدأ -->
+        <div id="screen-start" class="screen active">
+            <h2>مرحباً بك في المنصة التعليمية</h2>
+            <button class="btn btn-accent" onclick="navigateTo('screen-grades')">ابدأ</button>
+        </div>
+
+        <!-- الشاشة 2: اختيار الصف -->
+        <div id="screen-grades" class="screen">
+            <h2>اختر المرحلة الدراسية</h2>
+            <div class="btn-group">
+                <button class="btn" onclick="selectGrade('البكالوريا')">البكالوريا</button>
+                <button class="btn" onclick="selectGrade('الصف التاسع')">الصف التاسع</button>
+            </div>
+        </div>
+
+        <!-- الشاشة 3: اختيار المادة -->
+        <div id="screen-subjects" class="screen">
+            <h2 id="grade-title">اختر المادة</h2>
+            <div class="btn-group">
+                <button class="btn" onclick="selectSubject('الفيزياء')">الفيزياء</button>
+                <button class="btn" onclick="selectSubject('الكيمياء')">الكيمياء</button>
+            </div>
+        </div>
+
+        <!-- الشاشة 4: اختيار الوحدة -->
+        <div id="screen-units" class="screen">
+            <h2 id="subject-title">اختر الوحدة</h2>
+            <div class="btn-group">
+                <button class="btn" onclick="selectUnit('الوحدة الأولى')">الوحدة الأولى</button>
+                <button class="btn" onclick="selectUnit('الوحدة الثانية')">الوحدة الثانية</button>
+                <button class="btn" onclick="selectUnit('الوحدة الثالثة')">الوحدة الثالثة</button>
+            </div>
+        </div>
+
+        <!-- الشاشة 5: اختيار الدرس -->
+        <div id="screen-lessons" class="screen">
+            <h2 id="unit-title">اختر الدرس</h2>
+            <div class="btn-group">
+                <button class="btn" onclick="selectLesson('الدرس الأول')">الدرس الأول</button>
+                <button class="btn" onclick="selectLesson('الدرس الثاني')">الدرس الثاني</button>
+                <button class="btn" onclick="selectLesson('الدرس الثالث')">الدرس الثالث</button>
+                <button class="btn" onclick="selectLesson('الدرس الرابع')">الدرس الرابع</button>
+            </div>
+        </div>
+
+        <!-- الشاشة 6: الخيارات النهائية للدرس -->
+        <div id="screen-action" class="screen">
+            <h2 id="lesson-title">اختر نوع النشاط</h2>
+            <div class="btn-group">
+                <button class="btn" onclick="openContent('دراسة')">دراسة 📖</button>
+                <button class="btn btn-accent" onclick="openContent('اختبر قدرتك')">اختبر قدرتك 📝</button>
+            </div>
+        </div>
+
+        <!-- شاشة عرض المحتوى النهائي -->
+        <div id="screen-content" class="screen">
+            <h2 id="content-title">المحتوى</h2>
+            <div class="info-box" id="content-body">
+                هنا سيتم عرض محتوى الدرس أو الاختبار مستقبلاً.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- التذييل الحفظ والتوقيع -->
+    <footer>
+        تم التصميم من قبل المهندس أحمد علي عمران / جميع الحقوق محفوظة © 2026
+    </footer>
+
+    <script>
+        // إخفاء الشاشة الترحيبية بعد 4 ثوانٍ
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => {
+                    splash.style.visibility = 'hidden';
+                }, 1000);
+            }, 4000);
+        });
+
+        // إدارة التنقل وسجل الشاشات
+        let historyStack = ['screen-start'];
+        let selectedData = {
+            grade: '',
+            subject: '',
+            unit: '',
+            lesson: ''
+        };
+
+        function navigateTo(screenId) {
+            const currentScreen = historyStack[historyStack.length - 1];
+            document.getElementById(currentScreen).classList.remove('active');
+            
+            document.getElementById(screenId).classList.add('active');
+            historyStack.push(screenId);
+
+            // إظهار زر الرجوع إذا لم نكن في الشاشة الأولى
+            const backBtn = document.getElementById('back-btn');
+            if (historyStack.length > 1 && screenId !== 'screen-start') {
+                backBtn.style.display = 'block';
+            } else {
+                backBtn.style.display = 'none';
+            }
+        }
+
+        function goBack() {
+            if (historyStack.length > 1) {
+                const currentScreen = historyStack.pop();
+                document.getElementById(currentScreen).classList.remove('active');
+
+                const previousScreen = historyStack[historyStack.length - 1];
+                document.getElementById(previousScreen).classList.add('active');
+
+                if (historyStack.length <= 1 || previousScreen === 'screen-start') {
+                    document.getElementById('back-btn').style.display = 'none';
+                }
+            }
+        }
+
+        // الدوال الخاصة بنقل الاختيارات وتحديث العناوين
+        function selectGrade(grade) {
+            selectedData.grade = grade;
+            document.getElementById('grade-title').innerText = grade + ' - اختر المادة';
+            navigateTo('screen-subjects');
+        }
+
+        function selectSubject(subject) {
+            selectedData.subject = subject;
+            document.getElementById('subject-title').innerText = subject + ' - اختر الوحدة';
+            navigateTo('screen-units');
+        }
+
+        function selectUnit(unit) {
+            selectedData.unit = unit;
+            document.getElementById('unit-title').innerText = unit + ' - اختر الدرس';
+            navigateTo('screen-lessons');
+        }
+
+        function selectLesson(lesson) {
+            selectedData.lesson = lesson;
+            document.getElementById('lesson-title').innerText = lesson;
+            navigateTo('screen-action');
+        }
+
+        function openContent(type) {
+            const title = `${type} - ${selectedData.lesson}`;
+            const details = `أنت الآن في قسم (<b>${type}</b>) لـ ${selectedData.lesson} - ${selectedData.unit} - مادة ${selectedData.subject} (${selectedData.grade}).`;
+            
+            document.getElementById('content-title').innerText = title;
+            document.getElementById('content-body').innerHTML = details;
+            navigateTo('screen-content');
+        }
+    </script>
+</body>
+</html>
