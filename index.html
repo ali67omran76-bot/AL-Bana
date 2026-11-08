@@ -167,7 +167,7 @@
             margin-top: 15px;
         }
 
-        /* تنسيق نموذج الاشتراك المحدث */
+        /* تنسيق نموذج الاشتراك الأخير */
         .subscription-form {
             display: flex;
             flex-direction: column;
@@ -238,7 +238,7 @@
         <!-- زر العودة -->
         <button id="back-btn" class="back-btn" onclick="goBack()" style="display: none;">← رجوع</button>
 
-        <!-- الشاشة 1 (البداية): نموذج الاشتراك المحدث -->
+        <!-- الشاشة 1 (البداية): نموذج إرسال طلب الاشتراك في المنصة -->
         <div id="screen-start" class="screen active">
             <div class="subscription-form">
                 <h3>تفعيل اشتراك منصة AL BANA 🐐</h3>
@@ -400,7 +400,7 @@
             navigateTo('screen-content');
         }
 
-        // دالة إرسال طلب الاشتراك لتليغرام بالتوكن الجديد
+        // دالة إرسال طلب الاشتراك لتليغرام المحدثة
         async function sendRequestToTelegram() {
             const studentName = document.getElementById('studentName').value.trim();
             const studentPhone = document.getElementById('studentPhone').value.trim();
@@ -411,11 +411,11 @@
                 return;
             }
 
-            // 🔑 مفاتيح بوتك (مركبة وجاهزة)
+            // 🔑 مفاتيح بوتك والـ Chat ID الخاص بك
             const botToken = '8801959212:AAGsxSSi1g060YGd1-jzn0yJR0aHzroKeYQ';
-            const chatId = '5678802502'; // الـ Chat ID الخاص بك
+            const chatId = '5678802502';
 
-            // صياغة الرسالة التي ستصلك على تليغرام
+            // صياغة الرسالة
             const message = `🚨 طلب اشتراك جديد يا ال GOAT!\n\n` +
                             `👤 الاسم: ${studentName}\n` +
                             `📱 رقم الواتساب: ${studentPhone}\n` +
@@ -427,6 +427,7 @@
                 let response = await fetch(url, {
                     method: 'POST',
                     headers: {
+                        'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -439,16 +440,15 @@
                 let data = await response.json();
                 if (data.ok) {
                     alert('تم إرسال طلبك بنجاح! سيتم التحقق وإرسال الكود عبر واتساب قريباً.');
-                    // تفريغ الحقول بعد الإرسال
                     document.getElementById('studentName').value = '';
                     document.getElementById('studentPhone').value = '';
                     document.getElementById('paymentTrx').value = '';
                 } else {
-                    alert('حدث خطأ أثناء الإرسال من تيليغرام.');
+                    alert('خطأ من تيليغرام: ' + (data.description || 'تأكد من بدء المحادثة مع البوت'));
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('فشل الاتصال، تحقق من الانترنت.');
+                alert('فشل الاتصال، تأكد من اتصال الإنترنت.');
             }
         }
     </script>
