@@ -167,7 +167,7 @@
             margin-top: 15px;
         }
 
-        /* تنسيق نموذج الاشتراك الجديد */
+        /* تنسيق نموذج إدخال كود التفعيل */
         .subscription-form {
             display: flex;
             flex-direction: column;
@@ -238,14 +238,12 @@
         <!-- زر العودة -->
         <button id="back-btn" class="back-btn" onclick="goBack()" style="display: none;">← رجوع</button>
 
-        <!-- الشاشة 1 (البداية): نموذج إرسال طلب الاشتراك في المنصة -->
+        <!-- الشاشة 1 (البداية): قسم إدخال كود التفعيل للطالب -->
         <div id="screen-start" class="screen active">
-            <div class="subscription-form">
-                <h3>تفعيل اشتراك منصة AL BANA 🐐</h3>
-                <input type="text" id="studentName" placeholder="الاسم الثلاثي للطالب" required>
-                <input type="text" id="studentPhone" placeholder="رقم الواتساب (مثال: 0983957561)" required>
-                <input type="text" id="paymentTrx" placeholder="رقم عملية الدفع (شام كاش)" required>
-                <button onclick="sendRequestToTelegram()">إرسال طلب التفعيل</button>
+            <div class="subscription-form" style="margin-top: 0;">
+                <h3>تفعيل اشتراك منصة AL BANA</h3>
+                <input type="text" id="activationCode" placeholder="أدخل كود الاشتراك (مثال: ALBANA-XXXX)" required>
+                <button onclick="verifyAndBurnCode()">تحقق وتفعيل الحساب</button>
             </div>
             <div style="margin-top: 15px;">
                 <button class="btn" style="padding: 10px; font-size: 0.95rem;" onclick="navigateTo('screen-grades')">تخطي / الدخول للمنصة 🚀</button>
@@ -400,77 +398,36 @@
             navigateTo('screen-content');
         }
 
-        // دالة إرسال طلب الاشتراك لتليغرام مع الأزرار وسيرفر غوغل
-        async function sendRequestToTelegram() {
-            const studentName = document.getElementById('studentName').value.trim();
-            const studentPhone = document.getElementById('studentPhone').value.trim();
-            const paymentTrx = document.getElementById('paymentTrx').value.trim();
-
-            if (!studentName || !studentPhone || !paymentTrx) {
-                alert('الرجاء تعبئة جميع الحقول المطلوبة يا ال GOAT!');
+        // دالة التحقق من كود التفعيل وحرقه عبر سيرفر غوغل
+        async function verifyAndBurnCode() {
+            const code = document.getElementById('activationCode').value.trim();
+            if (!code) {
+                alert('الرجاء إدخال كود التفعيل.');
                 return;
             }
 
-            // 🔑 مفاتيح بوتك ورابط سيرفر غوغل السحابي
-            const botToken = '9048880710:AAGOMmXTOOx7IG2rRplol3DultUWeTm9PEE';
-            const chatId = '5678802502';
-            const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbxAREUg-NNF9deJT1LcqwIbaemE0JzfH6icPeCVAe_03O--jMp_haLI91Wi2QKxaHcdlA/exec';
-
-            // صياغة الرسالة لتليغرام
-            const message = `🚨 **طلب اشتراك جديد يا ال GOAT!**\n\n` +
-                            `👤 الاسم: ${studentName}\n` +
-                            `📱 رقم الواتساب: ${studentPhone}\n` +
-                            `💳 رقم العملية: ${paymentTrx}`;
-
-            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-
-            // تصميم الأزرار التفاعلية (Inline Keyboard)
-            const inlineKeyboard = {
-                inline_keyboard: [
-                    [
-                        { text: "✅ موافقة وإرسال الكود", callback_data: `approve_${studentPhone}` },
-                        { text: "❌ رفض الطلب", callback_data: `reject_${studentPhone}` }
-                    ]
-                ]
-            };
+            // رابط سيرفر غوغل الجديد والمحدث
+            const googleScriptUrl = 'https://script.google.com/macros/s/AKfycby1b8pT5ZJvpkAr_8WY9ugcuWAZDShoyZHun3LACj8yy4qqjtKELaaOkLo_tw09__FeSg/exec';
 
             try {
-                // 1. إرسال الإشعار والأزرار إلى بوت تليغرام للأدمن
-                let response = await fetch(telegramUrl, {
+                let response = await fetch(googleScriptUrl, {
                     method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        chat_id: chatId,
-                        text: message,
-                        parse_mode: 'Markdown',
-                        reply_markup: inlineKeyboard
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: "verify_code", code: code })
                 });
 
-                let data = await response.json();
+                let result = await response.json();
 
-                // 2. إرسال نسخة من البيانات لسيرفر غوغل Apps Script للاستجابة الخلفية
-                fetch(googleScriptUrl, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: studentName, phone: studentPhone, trx: paymentTrx })
-                }).catch(e => console.log('Google Script Sync:', e));
-
-                if (data.ok) {
-                    alert('تم إرسال طلبك بنجاح! بانتظار المراجعة من الـ GOAT.');
-                    document.getElementById('studentName').value = '';
-                    document.getElementById('studentPhone').value = '';
-                    document.getElementById('paymentTrx').value = '';
+                if (result.success) {
+                    localStorage.setItem('al_bana_active', 'true');
+                    alert(result.message); // تم التفعيل بنجاح واحترق الكود
+                    location.reload();
                 } else {
-                    alert('خطأ من تيليغرام: ' + (data.description || 'تأكد من إعدادات البوت'));
+                    alert(result.message); // الكود غير صحيح أو مستهلك مسبقاً
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('فشل الاتصال، تأكد من اتصال الإنترنت.');
+                alert('حدث خطأ أثناء الاتصال بالسيرفر.');
             }
         }
     </script>
