@@ -167,6 +167,54 @@
             margin-top: 15px;
         }
 
+        /* تنسيق نموذج الاشتراك المدمج */
+        .subscription-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .subscription-form h3 {
+            color: var(--text);
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .subscription-form input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: rgba(15, 23, 42, 0.6);
+            color: var(--text);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .subscription-form input:focus {
+            border-color: var(--primary);
+        }
+
+        .subscription-form button {
+            background-color: var(--accent);
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+            margin-top: 5px;
+        }
+
+        .subscription-form button:hover {
+            background-color: #db2777;
+        }
+
         /* الفوتر (تذييل الصفحة) */
         footer {
             margin-top: 20px;
@@ -249,6 +297,20 @@
             <h2 id="content-title">المحتوى</h2>
             <div class="info-box" id="content-body">
                 هنا سيتم عرض محتوى الدرس أو الاختبار مستقبلاً.
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-accent" onclick="navigateTo('screen-subscription')">تفعيل الاشتراك بالمنصة 🐐</button>
+            </div>
+        </div>
+
+        <!-- شاشة طلب الاشتراك (المدمجة) -->
+        <div id="screen-subscription" class="screen">
+            <div class="subscription-form">
+                <h3>تفعيل اشتراك منصة AL BANA 🐐</h3>
+                <input type="text" id="studentName" placeholder="الاسم الثلاثي للطالب" required>
+                <input type="text" id="studentPhone" placeholder="رقم الواتساب (مثال: 0983957561)" required>
+                <input type="text" id="paymentTrx" placeholder="رقم عملية الدفع (شام كاش)" required>
+                <button onclick="sendRequestToTelegram()">إرسال طلب التفعيل</button>
             </div>
         </div>
 
@@ -342,6 +404,58 @@
             document.getElementById('content-title').innerText = title;
             document.getElementById('content-body').innerHTML = details;
             navigateTo('screen-content');
+        }
+
+        // دالة إرسال طلب الاشتراك لتليغرام
+        async function sendRequestToTelegram() {
+            const studentName = document.getElementById('studentName').value.trim();
+            const studentPhone = document.getElementById('studentPhone').value.trim();
+            const paymentTrx = document.getElementById('paymentTrx').value.trim();
+
+            if (!studentName || !studentPhone || !paymentTrx) {
+                alert('الرجاء تعبئة جميع الحقول المطلوبة يا ال GOAT!');
+                return;
+            }
+
+            // 🔑 مفاتيح بوتك الشخصية
+            const botToken = 'ضع_توكن_البوت_الخاص_بك_هنا'; // ضع هنا التوكن الذي أعطاك إياه BotFather
+            const chatId = '5678802502'; // الـ Chat ID الخاص بك
+
+            // صياغة الرسالة التي ستصلك على تليغرام
+            const message = `🚨 **طلب اشتراك جديد يا ال GOAT!**\n\n` +
+                            `👤 **الاسم:** ${studentName}\n` +
+                            `📱 **رقم الواتساب:** ${studentPhone}\n` +
+                            `💳 **رقم العملية:** ${paymentTrx}`;
+
+            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+            try {
+                let response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        chat_id: chatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                let data = await response.json();
+                if (data.ok) {
+                    alert('تم إرسال طلبك بنجاح! سيتم التحقق وإرسال الكود عبر واتساب قريباً.');
+                    // تفريغ الحقول بعد الإرسال
+                    document.getElementById('studentName').value = '';
+                    document.getElementById('studentPhone').value = '';
+                    document.getElementById('paymentTrx').value = '';
+                } else {
+                    alert('حدث خطأ أثناء الإرسال، تأكد من توكن البوت.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('فشل الاتصال، تحقق من الانترنت.');
+            }
         }
     </script>
 </body>
