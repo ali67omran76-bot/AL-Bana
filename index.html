@@ -167,7 +167,7 @@
             margin-top: 15px;
         }
 
-        /* تنسيق نموذج الاشتراك الجديد المدمج */
+        /* تنسيق نموذج الاشتراك المحدث */
         .subscription-form {
             display: flex;
             flex-direction: column;
@@ -238,7 +238,7 @@
         <!-- زر العودة -->
         <button id="back-btn" class="back-btn" onclick="goBack()" style="display: none;">← رجوع</button>
 
-        <!-- الشاشة 1 (البداية بعد الترحيب): شاشة الاشتراك الجديدة -->
+        <!-- الشاشة 1 (البداية): نموذج الاشتراك المحدث -->
         <div id="screen-start" class="screen active">
             <div class="subscription-form">
                 <h3>تفعيل اشتراك منصة AL BANA 🐐</h3>
@@ -310,7 +310,7 @@
 
     </div>
 
-    <!-- التذييل الحفظ والتوقيع -->
+    <!-- التذييل والحقوق -->
     <footer>
         تم التصميم من قبل المهندس أحمد علي عمران / جميع الحقوق محفوظة © 2026
     </footer>
@@ -400,7 +400,7 @@
             navigateTo('screen-content');
         }
 
-        // دالة إرسال طلب الاشتراك لتليغرام
+        // دالة إرسال طلب الاشتراك لتليغرام بالتوكن الجديد
         async function sendRequestToTelegram() {
             const studentName = document.getElementById('studentName').value.trim();
             const studentPhone = document.getElementById('studentPhone').value.trim();
@@ -411,15 +411,15 @@
                 return;
             }
 
-            // 🔑 مفاتيح بوتك (موضوعة وجاهزة يا غالي)
-            const botToken = '7994270228:AAE0oQ71pXF1vXm...'; // توكن بوتك Al Bana Store
+            // 🔑 مفاتيح بوتك (مركبة وجاهزة)
+            const botToken = '8801959212:AAGsxSSi1g060YGd1-jzn0yJR0aHzroKeYQ';
             const chatId = '5678802502'; // الـ Chat ID الخاص بك
 
             // صياغة الرسالة التي ستصلك على تليغرام
-            const message = `🚨 **طلب اشتراك جديد يا ال GOAT!**\n\n` +
-                            `👤 **الاسم:** ${studentName}\n` +
-                            `📱 **رقم الواتساب:** ${studentPhone}\n` +
-                            `💳 **رقم العملية:** ${paymentTrx}`;
+            const message = `🚨 طلب اشتراك جديد يا ال GOAT!\n\n` +
+                            `👤 الاسم: ${studentName}\n` +
+                            `📱 رقم الواتساب: ${studentPhone}\n` +
+                            `💳 رقم العملية: ${paymentTrx}`;
 
             const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
 
@@ -444,7 +444,7 @@
                     document.getElementById('studentPhone').value = '';
                     document.getElementById('paymentTrx').value = '';
                 } else {
-                    alert('حدث خطأ أثناء الإرسال.');
+                    alert('حدث خطأ أثناء الإرسال من تيليغرام.');
                 }
             } catch (error) {
                 console.error('Error:', error);
