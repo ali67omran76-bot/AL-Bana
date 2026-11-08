@@ -167,7 +167,7 @@
             margin-top: 15px;
         }
 
-        /* تنسيق نموذج الاشتراك المدمج */
+        /* تنسيق نموذج الاشتراك الجديد المدمج */
         .subscription-form {
             display: flex;
             flex-direction: column;
@@ -238,10 +238,18 @@
         <!-- زر العودة -->
         <button id="back-btn" class="back-btn" onclick="goBack()" style="display: none;">← رجوع</button>
 
-        <!-- الشاشة 1: زر ابدأ -->
+        <!-- الشاشة 1 (البداية بعد الترحيب): شاشة الاشتراك الجديدة -->
         <div id="screen-start" class="screen active">
-            <h2>مرحباً بك في المنصة التعليمية</h2>
-            <button class="btn btn-accent" onclick="navigateTo('screen-grades')">ابدأ</button>
+            <div class="subscription-form">
+                <h3>تفعيل اشتراك منصة AL BANA 🐐</h3>
+                <input type="text" id="studentName" placeholder="الاسم الثلاثي للطالب" required>
+                <input type="text" id="studentPhone" placeholder="رقم الواتساب (مثال: 0983957561)" required>
+                <input type="text" id="paymentTrx" placeholder="رقم عملية الدفع (شام كاش)" required>
+                <button onclick="sendRequestToTelegram()">إرسال طلب التفعيل</button>
+            </div>
+            <div style="margin-top: 15px;">
+                <button class="btn" style="padding: 10px; font-size: 0.95rem;" onclick="navigateTo('screen-grades')">تخطي / الدخول للمنصة 🚀</button>
+            </div>
         </div>
 
         <!-- الشاشة 2: اختيار الصف -->
@@ -297,20 +305,6 @@
             <h2 id="content-title">المحتوى</h2>
             <div class="info-box" id="content-body">
                 هنا سيتم عرض محتوى الدرس أو الاختبار مستقبلاً.
-            </div>
-            <div style="margin-top: 20px;">
-                <button class="btn btn-accent" onclick="navigateTo('screen-subscription')">تفعيل الاشتراك بالمنصة 🐐</button>
-            </div>
-        </div>
-
-        <!-- شاشة طلب الاشتراك (المدمجة) -->
-        <div id="screen-subscription" class="screen">
-            <div class="subscription-form">
-                <h3>تفعيل اشتراك منصة AL BANA 🐐</h3>
-                <input type="text" id="studentName" placeholder="الاسم الثلاثي للطالب" required>
-                <input type="text" id="studentPhone" placeholder="رقم الواتساب (مثال: 0983957561)" required>
-                <input type="text" id="paymentTrx" placeholder="رقم عملية الدفع (شام كاش)" required>
-                <button onclick="sendRequestToTelegram()">إرسال طلب التفعيل</button>
             </div>
         </div>
 
@@ -417,8 +411,8 @@
                 return;
             }
 
-            // 🔑 مفاتيح بوتك الشخصية
-            const botToken = 'ضع_توكن_البوت_الخاص_بك_هنا'; // ضع هنا التوكن الذي أعطاك إياه BotFather
+            // 🔑 مفاتيح بوتك (موضوعة وجاهزة يا غالي)
+            const botToken = '7994270228:AAE0oQ71pXF1vXm...'; // توكن بوتك Al Bana Store
             const chatId = '5678802502'; // الـ Chat ID الخاص بك
 
             // صياغة الرسالة التي ستصلك على تليغرام
@@ -450,7 +444,7 @@
                     document.getElementById('studentPhone').value = '';
                     document.getElementById('paymentTrx').value = '';
                 } else {
-                    alert('حدث خطأ أثناء الإرسال، تأكد من توكن البوت.');
+                    alert('حدث خطأ أثناء الإرسال.');
                 }
             } catch (error) {
                 console.error('Error:', error);
