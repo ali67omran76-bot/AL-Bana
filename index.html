@@ -167,7 +167,7 @@
             margin-top: 15px;
         }
 
-        /* تنسيق نموذج الاشتراك الأخير */
+        /* تنسيق نموذج الاشتراك الجديد */
         .subscription-form {
             display: flex;
             flex-direction: column;
@@ -400,7 +400,7 @@
             navigateTo('screen-content');
         }
 
-        // دالة إرسال طلب الاشتراك لتليغرام بالبوت الجديد والنظيف
+        // دالة إرسال طلب الاشتراك لتليغرام مع الأزرار وسيرفر غوغل
         async function sendRequestToTelegram() {
             const studentName = document.getElementById('studentName').value.trim();
             const studentPhone = document.getElementById('studentPhone').value.trim();
@@ -411,20 +411,32 @@
                 return;
             }
 
-            // 🔑 مفاتيح بوتك الجديد والنظيف 100%
+            // 🔑 مفاتيح بوتك ورابط سيرفر غوغل السحابي
             const botToken = '9048880710:AAGOMmXTOOx7IG2rRplol3DultUWeTm9PEE';
             const chatId = '5678802502';
+            const googleScriptUrl = 'https://script.google.com/macros/s/AKfycbxAREUg-NNF9deJT1LcqwIbaemE0JzfH6icPeCVAe_03O--jMp_haLI91Wi2QKxaHcdlA/exec';
 
-            // صياغة الرسالة
-            const message = `🚨 طلب اشتراك جديد يا ال GOAT!\n\n` +
+            // صياغة الرسالة لتليغرام
+            const message = `🚨 **طلب اشتراك جديد يا ال GOAT!**\n\n` +
                             `👤 الاسم: ${studentName}\n` +
                             `📱 رقم الواتساب: ${studentPhone}\n` +
                             `💳 رقم العملية: ${paymentTrx}`;
 
-            const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
+            const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
+
+            // تصميم الأزرار التفاعلية (Inline Keyboard)
+            const inlineKeyboard = {
+                inline_keyboard: [
+                    [
+                        { text: "✅ موافقة وإرسال الكود", callback_data: `approve_${studentPhone}` },
+                        { text: "❌ رفض الطلب", callback_data: `reject_${studentPhone}` }
+                    ]
+                ]
+            };
 
             try {
-                let response = await fetch(url, {
+                // 1. إرسال الإشعار والأزرار إلى بوت تليغرام للأدمن
+                let response = await fetch(telegramUrl, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -433,18 +445,28 @@
                     body: JSON.stringify({
                         chat_id: chatId,
                         text: message,
-                        parse_mode: 'Markdown'
+                        parse_mode: 'Markdown',
+                        reply_markup: inlineKeyboard
                     })
                 });
 
                 let data = await response.json();
+
+                // 2. إرسال نسخة من البيانات لسيرفر غوغل Apps Script للاستجابة الخلفية
+                fetch(googleScriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: studentName, phone: studentPhone, trx: paymentTrx })
+                }).catch(e => console.log('Google Script Sync:', e));
+
                 if (data.ok) {
-                    alert('تم إرسال طلبك بنجاح! سيتم التحقق وإرسال الكود عبر واتساب قريباً.');
+                    alert('تم إرسال طلبك بنجاح! بانتظار المراجعة من الـ GOAT.');
                     document.getElementById('studentName').value = '';
                     document.getElementById('studentPhone').value = '';
                     document.getElementById('paymentTrx').value = '';
                 } else {
-                    alert('خطأ من تيليغرام: ' + (data.description || 'تأكد من بدء المحادثة مع البوت'));
+                    alert('خطأ من تيليغرام: ' + (data.description || 'تأكد من إعدادات البوت'));
                 }
             } catch (error) {
                 console.error('Error:', error);
